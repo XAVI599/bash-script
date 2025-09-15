@@ -1,0 +1,2 @@
+# bash-script
+thumbnail-generator
