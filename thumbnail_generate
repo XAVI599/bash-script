@@ -4,7 +4,10 @@
 
 #select only jpg or png
 for n in *.{jpg,png}
-do 
+do
+
+if [[ -e "$n" ]]; then
+ 
 
         width_height=$(identify -format "%wx%h" "${n}")         
         width=$(echo "${width_height}"|cut -d 'x' -f 1)
@@ -38,9 +41,8 @@ do
  
  else
       echo "skipping image ${n} : no change needed to be done here --> ${width_height}" 
-fi
+ fi
  
+fi
+
 done
-
-#if [[ ${n#*.} == "jpg" || ${n#*.} == png ]];then echo "yes" ;else echo no ;fi
-
