@@ -1,0 +1,46 @@
+#! /usr/bin/env bash
+#create thumbnails for jpg or png files
+
+
+#select only jpg or png
+for n in *.{jpg,png}
+do 
+
+        width_height=$(identify -format "%wx%h" "${n}")         
+        width=$(echo "${width_height}"|cut -d 'x' -f 1)
+        height=$(echo "${width_height}"| cut -d 'x' -f 2)
+        img_ext=$(echo ${n##*.})
+
+ #check for size of thumbnail if < 100 X 100 dont generate or else generate a new one
+ if [[ ${n#*.} == 'thumbnail.jpg' || ${n#*.} == 'thumbnail.png' ]] && ((width > 100 || height > 100)) ;then
+        #compare size
+          echo "resizing file : ${n}" 
+          convert "${n}" -resize 100x100 "${n}"
+ 
+ elif [[ ${n##*.} == 'jpg' || ${n##*.} == 'png' ]] && ((width > 100 || height > 100));then
+       
+      	#check if a thumbnail already exists
+       if [[ -e "${n%%.${img_ext}}.thumbnail.${img_ext}" ]] ;then
+                #check for thumbnail width and height
+                width_height_thumbnail=$(identify -format "%wx%h" "${n%%.${img_ext}}.thumbnail.${img_ext}")
+                weight_t=$(echo "${width_height_thumbnail}"|cut -d 'x' -f 1)
+                height_t=$(echo "${width_height_thumbnail}"| cut -d 'x' -f 2) 
+                if ((weight_t <=100 && height_t <=100));then
+          		echo "Thumbnail already exists with the proper width and height ${n}"
+                else
+                        echo "Thumbnail size is not in correct ratio --> will be resized on its turn"   
+                fi      
+        else
+       	#if image format and size > than 100 create thumbnail size image 
+      	 	convert "${n}" -resize 100x100 "${n%%.${img_ext}}.thumbnail.${img_ext}"
+       		echo "resizing ${n} --> file created: ${n%%.${img_ext}}.thumbnail.${img_ext}" 
+       fi
+ 
+ else
+      echo "skipping image ${n} : no change needed to be done here --> ${width_height}" 
+fi
+ 
+done
+
+#if [[ ${n#*.} == "jpg" || ${n#*.} == png ]];then echo "yes" ;else echo no ;fi
+
